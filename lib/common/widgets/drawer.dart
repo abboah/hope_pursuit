@@ -34,30 +34,18 @@ class CustomDrawer extends StatelessWidget {
                 )),
           ),
           ListTile(
-            leading: TextButton(
-              onPressed: () {
-                // Handle Products button tap
-              },
-              child: const Text('Products'),
-            ),
+            onTap: () {},
+            leading: Text('Products'),
             trailing: const Icon(Icons.archive),
           ),
           ListTile(
-            leading: TextButton(
-              onPressed: () {
-                // Handle Settings button tap
-              },
-              child: const Text('Orders'),
-            ),
+            onTap: () {},
+            leading: Text('Orders'),
             trailing: const Icon(CupertinoIcons.purchased),
           ),
           ListTile(
-            leading: TextButton(
-              onPressed: () {
-                // Handle About button tap
-              },
-              child: const Text('Wishlist'),
-            ),
+            onTap: () {},
+            leading: Text('Wishlist'),
             trailing: const Icon(CupertinoIcons.heart),
           ),
         ],

@@ -23,13 +23,13 @@ class CatalogueWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(right: 8.0.w, top: 17.h),
+      margin: const EdgeInsets.all(8),
       child: Column(
         children: [
           ClipOval(
             child: CachedNetworkImage(
               imageUrl: imageUrl!,
-              fit: BoxFit.fitWidth,
+              fit: BoxFit.cover,
               width: width,
               color: const Color.fromRGBO(29, 35, 50, 0.2),
               colorBlendMode: BlendMode.srcOver,

@@ -74,7 +74,7 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.white,
       key: _key,
       appBar: const CustomAppBar(),
-      drawer: const CustomDrawer(isLoggedIn: true),
+      drawer: const CustomDrawer(isLoggedIn: false),
       body: _buildBody(context),
       floatingActionButton: const CartButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -95,11 +95,12 @@ class _HomeState extends State<Home> {
   Widget _buildBody(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSellerCard(),
-          _buildCatalogue(),
+          _buildSellerCard(context),
+          _buildCatalogue(context),
+          const SizedBox(
+            height: 20,
+          ),
           _buildFeatured(context),
           _buildNewArrivals(context),
           const CustomFooter(),
@@ -108,7 +109,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildSellerCard() {
+  Widget _buildSellerCard(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       if (constraints.maxWidth > 600) {
         return SizedBox(
@@ -126,154 +127,155 @@ class _HomeState extends State<Home> {
     });
   }
 
-  Widget _buildCatalogue() {
+  Widget _buildCatalogue(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20.0.w, vertical: 25.0.h),
-      child: LayoutBuilder(builder: (context, constraints) {
-        if (constraints.maxWidth > 600) {
-          return Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Categories',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        Catalogue.routeName,
-                      );
-                    },
-                    child: const Text('See All ',
-                        style:
-                            TextStyle(color: Color(0xFF9B9B9B), fontSize: 18)),
-                  ),
-                ],
-              ),
-              FutureBuilder(
-                future: _fetchHomeDataFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return _buildErrorWidget();
-                  } else {
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 300,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: productProvider?.categories.length ?? 0,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          final category = productProvider!.categories[index];
-                          return InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                Catalogue.routeName,
-                                arguments: category.name,
-                              );
-                            },
-                            child: CatalogueWidget(
-                              key: Key(index.toString()), // Add a unique key
-                              height: 200,
-                              width: 180,
-                              index: index,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                color: Colors.black,
-                              ),
-                              imageUrl: category.imageUrl,
-                              text: category.name,
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  }
-                },
-              ),
-            ],
-          );
-        } else {
-          return Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Catalogue', style: FontStyles.montserratBold19()),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        Catalogue.routeName,
-                      );
-                    },
-                    child: Text(
-                      'See All ',
-                      style: FontStyles.montserratBold12().copyWith(
-                        color: const Color(0xFF9B9B9B),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              FutureBuilder(
-                future: _fetchHomeDataFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return _buildErrorWidget();
-                  } else {
-                    return SizedBox(
-                      width: double.infinity,
-                      height: MediaQuery.of(context).size.height / 4,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: productProvider?.categories.length ?? 0,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          final category = productProvider!.categories[index];
-                          return InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                Catalogue.routeName,
-                                arguments: category.name,
-                              );
-                            },
-                            child: CatalogueWidget(
-                              key: Key(index.toString()), // Add a unique key
-                              height: MediaQuery.of(context).size.height / 6,
-                              width: MediaQuery.of(context).size.width / 3,
-                              index: index,
-                              style: FontStyles.montserratRegular10().copyWith(
-                                color: Colors.black,
-                              ),
-                              imageUrl: category.imageUrl,
-                              text: category.name,
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  }
-                },
-              ),
-            ],
-          );
-        }
-      }),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return _buildCatalogueLayout(constraints);
+        },
+      ),
     );
+  }
+
+  Widget _buildCatalogueLayout(BoxConstraints constraints) {
+    if (constraints.maxWidth > 600) {
+      return _buildWideCatalogue();
+    } else {
+      return _buildNarrowCatalogue();
+    }
+  }
+
+  Widget _buildWideCatalogue() {
+    return Column(
+      children: [
+        _buildCategoriesHeader(),
+        _buildCatalogueContent(),
+      ],
+    );
+  }
+
+  Widget _buildNarrowCatalogue() {
+    return Column(
+      children: [
+        _buildCatalogueHeader(),
+        _buildCatalogueContent(),
+      ],
+    );
+  }
+
+  Widget _buildCategoriesHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text(
+          'Categories',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        _buildSeeAllText(),
+      ],
+    );
+  }
+
+  Widget _buildCatalogueHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('Catalogue', style: FontStyles.montserratBold19()),
+        _buildSeeAllText(),
+      ],
+    );
+  }
+
+  Widget _buildSeeAllText() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          Catalogue.routeName,
+        );
+      },
+      child: Text(
+        'See All ',
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget _buildCatalogueContent() {
+    return FutureBuilder(
+      future: _fetchHomeDataFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasError) {
+          return _buildErrorWidget();
+        } else {
+          return _buildCatalogueList();
+        }
+      },
+    );
+  }
+
+  Widget _buildCatalogueList() {
+    return LayoutBuilder(builder: (context, constraints) {
+      return SizedBox(
+        width: double.infinity,
+        height: constraints.maxWidth > 600
+            ? MediaQuery.of(context).size.height / 2
+            : MediaQuery.of(context).size.height / 3,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: productProvider?.categories.length ?? 0,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            final category = productProvider!.categories[index];
+            return InkWell(
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  Catalogue.routeName,
+                  arguments: category.name,
+                );
+              },
+              child: CatalogueWidget(
+                key: Key(index.toString()),
+                height: _calculateCatalogueItemHeight(context),
+                width: _calculateCatalogueItemWidth(context),
+                index: index,
+                style: _calculateCatalogueItemTextStyle(),
+                imageUrl: category.imageUrl,
+                text: category.name,
+              ),
+            );
+          },
+        ),
+      );
+    });
+  }
+
+  double _calculateCatalogueListHeight() {
+    return MediaQuery.of(context).size.height / (_isWideLayout() ? 1.5 : 3);
+  }
+
+  double _calculateCatalogueItemHeight(BuildContext context) {
+    return _isWideLayout() ? 200 : MediaQuery.of(context).size.height / 6;
+  }
+
+  double _calculateCatalogueItemWidth(BuildContext context) {
+    return _isWideLayout() ? 180 : MediaQuery.of(context).size.width / 3;
+  }
+
+  TextStyle _calculateCatalogueItemTextStyle() {
+    return _isWideLayout()
+        ? const TextStyle(fontSize: 18, color: Colors.black)
+        : FontStyles.montserratRegular10().copyWith(color: Colors.black);
+  }
+
+  bool _isWideLayout() {
+    return MediaQuery.of(context).size.width > 600;
   }
 
   Widget _buildFeatured(BuildContext context) {
@@ -346,6 +348,7 @@ class _HomeState extends State<Home> {
           _buildTitle(),
           SizedBox(height: 10.0.h),
           _buildProductGrid(),
+          SizedBox(height: 10.0.h),
         ],
       ),
     );
