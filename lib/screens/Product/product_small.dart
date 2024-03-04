@@ -8,24 +8,23 @@ import 'package:hope_pursuit/common/widgets/appbar.dart';
 import 'package:hope_pursuit/common/widgets/cart_button.dart';
 import 'package:hope_pursuit/common/widgets/drawer.dart';
 import 'package:hope_pursuit/dummy/dummy_data.dart';
+import 'package:hope_pursuit/models/product_model.dart';
 import 'package:hope_pursuit/screens/cart/cart.dart';
 import 'package:hope_pursuit/utils/app_colors.dart';
 import 'package:hope_pursuit/utils/font_styles.dart';
 
 // ignore: must_be_immutable
 class ProductSmall extends StatelessWidget {
-  ProductSmall({Key? key}) : super(key: key);
+  final ProductModel product;
+  ProductSmall({Key? key, required this.product}) : super(key: key);
   int index = 0;
   @override
   Widget build(BuildContext context) {
-    if (ModalRoute.of(context)!.settings.arguments != null) {
-      index = ModalRoute.of(context)!.settings.arguments as int;
-    }
     return Scaffold(
       appBar: const CustomAppBar(),
       backgroundColor: AppColors.white,
       drawer: const CustomDrawer(isLoggedIn: false),
-      body: _buildBody(context),
+      body: _buildBody(context, product),
       extendBody: true,
       floatingActionButton: const CartButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -37,7 +36,7 @@ class ProductSmall extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context, ProductModel product) {
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
     return NestedScrollView(
@@ -51,10 +50,10 @@ class ProductSmall extends StatelessWidget {
             pinned: false,
             flexibleSpace: FlexibleSpaceBar(
               background: CachedNetworkImage(
-                imageUrl: DummyData.featured[index],
+                imageUrl: product.imageUrl,
                 // color: const Color.fromRGBO(42, 3, 75, 0.35),
                 // colorBlendMode: BlendMode.srcOver,
-                fit: BoxFit.cover,
+                fit: BoxFit.fitHeight,
                 placeholder: (context, name) {
                   return ShimmerEffect(
                     borderRadius: 0.0.r,
@@ -86,10 +85,10 @@ class ProductSmall extends StatelessWidget {
                   _buildColorAndSizeSelection(context),
                   SizedBox(height: 10.0.h),
                   _buildProductDetail(context),
-                  SizedBox(height: 10.0.h),
-                  _buildReviews(context),
-                  SizedBox(height: 10.0.h),
-                  _buildRelatedProduct(context),
+                  // SizedBox(height: 10.0.h),
+                  // _buildReviews(context),
+                  // SizedBox(height: 10.0.h),
+                  // _buildRelatedProduct(context),
                 ],
               ),
             ),
@@ -123,11 +122,11 @@ class ProductSmall extends StatelessWidget {
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20.0.w),
             child: Text(
-              'Astylish Women Open Front Long Sleeve Chunky Knit Cardigan',
+              product.name,
               style: FontStyles.montserratRegular19(),
             ),
           ),
-          _buildPrice(context, '\$89.99'),
+          _buildPrice(context, 'GHC ${product.price}'),
         ],
       ),
     );
@@ -433,7 +432,7 @@ class ProductSmall extends StatelessWidget {
       width: double.infinity,
       height: 70.0.h,
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.blueBlack,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20.0.r),
           topRight: Radius.circular(20.0.r),
@@ -449,7 +448,7 @@ class ProductSmall extends StatelessWidget {
               child: const Icon(Icons.arrow_back)),
           AppButton.button(
             text: 'Add to cart',
-            color: AppColors.blueBlack,
+            color: AppColors.white,
             height: 48.0.h,
             width: 215.0.w,
             onTap: onTap,

@@ -14,27 +14,27 @@ import 'package:hope_pursuit/utils/app_colors.dart';
 
 // ignore: must_be_immutable
 class ProductLarge extends StatelessWidget {
-  ProductLarge({Key? key}) : super(key: key);
-  int index = 0;
+  const ProductLarge({
+    Key? key,
+    required this.product,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    if (ModalRoute.of(context)!.settings.arguments != null) {
-      final ProductModel product =
-          ModalRoute.of(context)!.settings.arguments as ProductModel;
-    }
-
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: const CustomAppBar(),
-      body: _buildBody(context, index),
+      body: _buildBody(context, product),
       floatingActionButton: const CartButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       extendBody: true,
     );
   }
+
+  final ProductModel product;
 }
 
-Widget _buildBody(BuildContext context, index) {
+Widget _buildBody(BuildContext context, ProductModel product) {
   var screenHeight = MediaQuery.of(context).size.height / 1.1;
   var screenWidth = MediaQuery.of(context).size.width;
   return Row(
@@ -43,7 +43,7 @@ Widget _buildBody(BuildContext context, index) {
         child: Stack(
           children: [
             CachedNetworkImage(
-              imageUrl: DummyData.featured[index],
+              imageUrl: product.imageUrl,
               // color: const Color.fromRGBO(42, 3, 75, 0.35),
               // colorBlendMode: BlendMode.srcOver,
               fit: BoxFit.fitHeight, height: screenHeight, width: screenWidth,
@@ -68,7 +68,7 @@ Widget _buildBody(BuildContext context, index) {
                   context: context,
                   onTap: () {
                     Navigator.pushNamed(context, Cart.routeName,
-                        arguments: index);
+                        arguments: product);
                   }),
             )
           ],
@@ -79,7 +79,7 @@ Widget _buildBody(BuildContext context, index) {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildAboutProduct(context),
+            _buildAboutProduct(context, product),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -88,9 +88,9 @@ Widget _buildBody(BuildContext context, index) {
                     SizedBox(height: 10.0.h),
                     _buildProductDetail(context),
                     SizedBox(height: 10.0.h),
-                    _buildReviews(context),
-                    SizedBox(height: 10.0.h),
-                    _buildRelatedProduct(context)
+                    //  _buildReviews(context),
+                    //  SizedBox(height: 10.0.h),
+                    //  _buildRelatedProduct(context)
                   ],
                 ),
               ),
@@ -102,7 +102,7 @@ Widget _buildBody(BuildContext context, index) {
   );
 }
 
-Widget _buildAboutProduct(BuildContext context) {
+Widget _buildAboutProduct(BuildContext context, ProductModel product) {
   return Container(
     color: AppColors.white,
     child: Column(
@@ -122,12 +122,12 @@ Widget _buildAboutProduct(BuildContext context) {
         ),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 20.0.w),
-          child: const Text(
-            'Astylish Women Open Front Long Sleeve Chunky Knit Cardigan',
-            style: TextStyle(fontSize: 18),
+          child: Text(
+            product.name,
+            style: const TextStyle(fontSize: 18),
           ),
         ),
-        _buildPrice(context, '\$89.99'),
+        _buildPrice(context, "GHC ${product.price}"),
       ],
     ),
   );

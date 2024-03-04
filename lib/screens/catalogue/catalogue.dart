@@ -64,9 +64,8 @@ class _CatalogueState extends State<Catalogue>
           return const Center(
             child: CircularProgressIndicator(),
           );
-          // }
-          // else if (snapshot.hasError) {
-          //   return _buildErrorWidget();
+        } else if (snapshot.hasError) {
+          return _buildErrorWidget();
         } else if (snapshot.connectionState == ConnectionState.done) {
           return _buildScaffold(context);
         } else {
@@ -124,6 +123,7 @@ class _CatalogueState extends State<Catalogue>
           controller: _tabController,
           children: productProvider.categories.map((category) {
             return SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,11 +185,11 @@ class _CatalogueState extends State<Catalogue>
             ProductModel product = products[index];
             return ProductCard(
               productName: product.name,
-              productPrice: "\$${product.price}",
+              productPrice: "GHC ${product.price}",
               imageUrl: product.imageUrl,
               onTap: () {
                 Navigator.pushNamed(context, Product.routeName,
-                    arguments: index);
+                    arguments: product);
               },
             );
           },
@@ -266,8 +266,8 @@ class _CatalogueState extends State<Catalogue>
 
   PreferredSizeWidget _buildTabBar() {
     return TabBar(
-      tabAlignment: TabAlignment.center,
-      isScrollable: true,
+      tabAlignment: TabAlignment.fill,
+      isScrollable: false,
       controller: _tabController,
       tabs: productProvider?.categories
               .map(

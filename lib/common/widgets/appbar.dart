@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:hope_pursuit/screens/home/home.dart';
 
+import '../../screens/catalogue/catalogue.dart';
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
 
@@ -29,7 +31,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  Catalogue.routeName,
+                );
+              },
               child: const Text('Products'),
             ),
             TextButton(

@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
           ),
-          initialRoute: Home.routeName,
+          initialRoute: '/',
           routes: AppConstants.appRoutes,
         ),
         designSize: const Size(375, 812),

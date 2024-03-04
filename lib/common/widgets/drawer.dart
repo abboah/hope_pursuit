@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../screens/catalogue/catalogue.dart';
+
 class CustomDrawer extends StatelessWidget {
   final bool isLoggedIn;
 
@@ -34,7 +36,12 @@ class CustomDrawer extends StatelessWidget {
                 )),
           ),
           ListTile(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                Catalogue.routeName,
+              );
+            },
             leading: Text('Products'),
             trailing: const Icon(Icons.archive),
           ),

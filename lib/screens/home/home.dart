@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -45,7 +46,9 @@ class _HomeState extends State<Home> {
     try {
       await productProvider?.fetchLatestProducts();
     } catch (e) {
-      print('Error fetching new arrivals data: $e');
+      if (kDebugMode) {
+        print('Error fetching new arrivals data: $e');
+      }
       rethrow; // Rethrow the error to be caught by the FutureBuilder
     }
   }
@@ -56,19 +59,25 @@ class _HomeState extends State<Home> {
 
     // Fetch data from the ProductProvider when the widget is created
     await productProvider!.fetchProductsData().then((_) {
-      print('Categories loaded: ${productProvider!.categories.length}');
+      if (kDebugMode) {
+        print('Categories loaded: ${productProvider!.categories.length}');
+      }
     });
 
     // Fetch latest uploaded products from ProductProvider for New Arrivals section
     await productProvider!.fetchLatestProducts().then((_) {
-      print(
-          'Latest products loaded: ${productProvider!.latestProducts.length}');
+      if (kDebugMode) {
+        print(
+            'Latest products loaded: ${productProvider!.latestProducts.length}');
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Number of categories: ${productProvider?.categories.length ?? 0}");
+    if (kDebugMode) {
+      print("Number of categories: ${productProvider?.categories.length ?? 0}");
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -98,9 +107,6 @@ class _HomeState extends State<Home> {
         children: [
           _buildSellerCard(context),
           _buildCatalogue(context),
-          const SizedBox(
-            height: 20,
-          ),
           _buildFeatured(context),
           _buildNewArrivals(context),
           const CustomFooter(),
@@ -129,7 +135,7 @@ class _HomeState extends State<Home> {
 
   Widget _buildCatalogue(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.0.w, vertical: 25.0.h),
+      margin: const EdgeInsets.all(20),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return _buildCatalogueLayout(constraints);
@@ -181,7 +187,7 @@ class _HomeState extends State<Home> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Catalogue', style: FontStyles.montserratBold19()),
+        Text('Categories', style: FontStyles.montserratBold19()),
         _buildSeeAllText(),
       ],
     );
@@ -195,7 +201,7 @@ class _HomeState extends State<Home> {
           Catalogue.routeName,
         );
       },
-      child: Text(
+      child: const Text(
         'See All ',
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
@@ -224,8 +230,8 @@ class _HomeState extends State<Home> {
       return SizedBox(
         width: double.infinity,
         height: constraints.maxWidth > 600
-            ? MediaQuery.of(context).size.height / 2
-            : MediaQuery.of(context).size.height / 3,
+            ? MediaQuery.of(context).size.height / 2.3
+            : MediaQuery.of(context).size.height / 3.5,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: productProvider?.categories.length ?? 0,
@@ -254,10 +260,6 @@ class _HomeState extends State<Home> {
         ),
       );
     });
-  }
-
-  double _calculateCatalogueListHeight() {
-    return MediaQuery.of(context).size.height / (_isWideLayout() ? 1.5 : 3);
   }
 
   double _calculateCatalogueItemHeight(BuildContext context) {
@@ -399,8 +401,9 @@ class _HomeState extends State<Home> {
                     productPrice: "\$${product.price}",
                     imageUrl: product.imageUrl,
                     onTap: () {
+                      // Navigate to product details screen with product data
                       Navigator.pushNamed(context, Product.routeName,
-                          arguments: index);
+                          arguments: product);
                     },
                   );
                 },
